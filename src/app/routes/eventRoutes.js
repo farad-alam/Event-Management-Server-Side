@@ -57,12 +57,11 @@ router.post('/', async (req, res) => {
 });
 
 //Get all events
-
 router.get('/', async (req, res) => {
   try {
     const events = await Event.find({})
-      .populate('userId', 'name email')
-      .populate('attendees', 'name email')
+      .populate("userId", "name email photoURL")
+      // .populate('attendees', 'name email')
       .sort({ date: 1 });
 
     res.json({
@@ -78,6 +77,30 @@ router.get('/', async (req, res) => {
     });
   }
 });
+
+
+//Get all events by user Id
+router.get("/userid/:userid", async (req, res) => {
+  const {userid} = req.params
+  try {
+    const events = await Event.find({ userId: userid })
+      .populate("userId", "name email photoURL")
+      // .populate("attendees", "name email")
+      .sort({ date: 1 });
+    // console.log(events);
+    res.json({
+      message: "Events retrieved successfully",
+      count: events.length,
+      events,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Server Error",
+      message: error.message,
+    });
+  }
+});
+
 
 // Get event by ID
 
@@ -141,6 +164,7 @@ router.put('/:id', async (req, res) => {
     await event.populate('attendees', 'name email');
 
     res.json({
+      success:true,
       message: 'Event updated successfully',
       event: event.toJSON()
     });
@@ -176,6 +200,7 @@ router.delete('/:id', async (req, res) => {
     await Event.findByIdAndDelete(req.params.id);
 
     res.json({
+      success:true,
       message: 'Event deleted successfully',
       eventId: req.params.id
     });
