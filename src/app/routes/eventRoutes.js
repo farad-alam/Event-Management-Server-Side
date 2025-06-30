@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   try {
     const { title, name, userId, date, time, location, description, } = req.body;
-
+    console.log(req.body);
     // Verify user exists
     const user = await User.findById(userId);
     if (!user) {
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
       const messages = Object.values(error.errors).map(err => err.message);
       return res.status(400).json({ 
         error: 'Validation Error', 
-        messages 
+        message : messages 
       });
     }
     
